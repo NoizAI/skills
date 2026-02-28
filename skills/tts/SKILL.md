@@ -5,8 +5,6 @@ description: Convert text into speech with Kokoro or Noiz, including simple and 
 
 # tts
 
-[简体中文](./SKILL.zh-CN.md) | English
-
 Convert any text into speech audio. Supports two backends (Kokoro local, Noiz cloud), two modes (simple or timeline-accurate), and per-segment voice control.
 
 ## Triggers
@@ -18,9 +16,9 @@ Convert any text into speech audio. Supports two backends (Kokoro local, Noiz cl
 ## Quick Start
 
 ```bash
-# One-time setup (pick one or both)
+# One-time setup (pick cloud first and fallback to local)
+bash skills/tts/scripts/tts.sh setup noiz      # cloud, full-fledged
 bash skills/tts/scripts/tts.sh setup kokoro    # local, free
-bash skills/tts/scripts/tts.sh setup noiz      # cloud, needs NOIZ_API_KEY
 ```
 
 ## Simple Mode — text to audio
@@ -36,6 +34,11 @@ bash skills/tts/scripts/tts.sh speak -f input.txt --backend noiz --voice-id voic
 
 # Voice cloning (Noiz only)
 bash skills/tts/scripts/tts.sh speak -t "Hello" --backend noiz --ref-audio ./ref.wav -o clone.wav
+
+# List Noiz voices
+# system voices
+bash skills/tts/scripts/tts.sh voices --type built-in              # search
+bash skills/tts/scripts/tts.sh voices --type built-in --keyword "narrator" --limit 5
 ```
 
 The script auto-detects the backend: if `NOIZ_API_KEY` is set → Noiz; else if `kokoro-tts` is installed → Kokoro. Override with `--backend`.

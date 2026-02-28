@@ -9,6 +9,7 @@ Usage:
   tts.sh speak  [options]   — text to audio (simple mode)
   tts.sh render [options]   — SRT to timeline-accurate audio
   tts.sh to-srt [options]   — text file to SRT with auto timings
+  tts.sh voices [options]   — list Noiz voices (built-in or custom)
   tts.sh setup  [backend]   — install dependencies for a backend
 
 Examples:
@@ -19,6 +20,8 @@ Examples:
   tts.sh render --srt input.srt --voice-map vm.json --backend noiz -o output.wav
   tts.sh to-srt -i article.txt -o article.srt
   tts.sh to-srt -i article.txt -o article.srt --cps 15 --gap 500
+  tts.sh voices --type built-in
+  tts.sh voices --type custom --keyword "narrator" --limit 5
   tts.sh setup kokoro
   tts.sh setup noiz
 EOF
@@ -223,12 +226,41 @@ cmd_to_srt() {
   "${cmd[@]}"
 }
 
+# ── voices (list Noiz voices) ─────────────────────────────────────────
+
+cmd_voices() {
+  local voice_type="built-in" keyword="" skip=0 limit=20
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --type)     voice_type="$2"; shift 2 ;;
+      --keyword)  keyword="$2"; shift 2 ;;
+      --skip)     skip="$2"; shift 2 ;;
+      --limit)    limit="$2"; shift 2 ;;
+      -h|--help)  echo "Usage: tts.sh voices [--type built-in|custom] [--keyword TEXT] [--skip N] [--limit N]"; exit 0 ;;
+      *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+  done
+
+  local api_key
+  api_key="$(ensure_noiz_api_key false)"
+  if [[ -z "$api_key" ]]; then
+    echo "Error: Noiz API key required. Run 'tts.sh setup noiz' to configure." >&2; exit 1
+  fi
+
+  local url="https://noiz.ai/v1/voices?voice_type=${voice_type}&skip=${skip}&limit=${limit}"
+  [[ -n "$keyword" ]] && url="${url}&keyword=${keyword}"
+
+  curl -sS -H "Authorization: ${api_key}" "$url"
+}
+
 # ── dispatch ──────────────────────────────────────────────────────────
 
 case "${1:-}" in
   speak)   shift; cmd_speak "$@" ;;
   render)  shift; cmd_render "$@" ;;
   to-srt)  shift; cmd_to_srt "$@" ;;
+  voices)  shift; cmd_voices "$@" ;;
   setup)   shift; cmd_setup "$@" ;;
   -h|--help|"") usage 0 ;;
   *) echo "Unknown command: $1"; usage 1 ;;

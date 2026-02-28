@@ -11,3 +11,9 @@
 # temp
 tmp/
 temp/
+
+.agents/
+skills-lock.json
+
+# credentials
+**/cred.json

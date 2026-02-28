@@ -5,8 +5,6 @@ description: Make generated speech feel companion-like with fillers, emotional t
 
 # characteristic-voice
 
-[简体中文](./SKILL.zh-CN.md) | English
-
 Make your AI agent sound like a real companion — one who sighs, laughs, hesitates, and speaks with genuine feeling.
 
 ## Triggers

@@ -4,52 +4,29 @@ English | [简体中文](./README.zh-CN.md)
 
 Central repository for managing Agent Skills.
 
-## Goals
+## Install with `npx skills add`
 
-- Store skill definitions in a unified format (`SKILL.md`)
-- Organize skills by topic with clear directories
-- Prepare for future publishing and reuse
+```bash
+# List skills from GitHub repository
+npx skills add NoizAI/skills --list --full-depth
 
-## Repository Structure
+# Install a specific skill from GitHub repository
+npx skills add NoizAI/skills --full-depth --skill tts -y
 
-```text
-.
-├── skills/
-│   ├── README.md
-│   ├── characteristic-voice/
-│   │   └── SKILL.md
-│   ├── tts/
-│   │   └── SKILL.md
-│   └── template-skill/
-│       └── SKILL.md
-├── CONTRIBUTING.md
-├── README.md
-└── README.zh-CN.md
+# Install from GitHub repository
+npx skills add <owner>/<repo>
+
+# Local development (run in this repo directory)
+npx skills add . --list --full-depth
 ```
 
-## Quick Start
+## Available skills
 
-1. Create a new skill directory under `skills/` (for example `my-skill/`)
-2. Add a `SKILL.md` file
-3. Fill triggers, capabilities, and workflow based on `skills/template-skill/SKILL.md`
+| Name | Description | Documentation | Run command |
+|------|-------------|---------------|-------------|
+| tts | Convert text into speech with Kokoro or Noiz, supporting simple mode and timeline-aligned rendering workflows. | [SKILL.md](./skills/tts/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| characteristic-voice | Make generated speech feel companion-like with fillers, emotional tuning, and preset speaking styles. | [SKILL.md](./skills/characteristic-voice/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill characteristic-voice -y` |
 
-## Skill Guidelines (Short)
+## Contributing
 
-- One skill per directory
-- Each skill directory must include `SKILL.md`
-- `SKILL.md` should clearly define:
-  - Trigger scenarios
-  - Capability boundaries (`can / cannot`)
-  - Standard workflow (step-by-step)
-  - Input and output contract
-
-## Notable Skills
-
-- `skills/tts/SKILL.md`: Scenario-focused voice generation workflows for autonomous agents, including scriptable pipelines for TTS rendering and subtitle generation.
-- `skills/characteristic-voice/SKILL.md`: One-step setup for expressive speaking styles (e.g., emotions and persona). It can integrate emoji-aware emotional TTS options such as Noiz, while remaining compatible with other emotional TTS providers.
-
-## Next Steps
-
-- Add validation scripts for structure and required fields
-- Add sample inputs/outputs and test data
-- Add publishing and installation instructions (project-level/global)
+For skill authoring rules, directory conventions, and PR guidance, see `CONTRIBUTING.md`.

@@ -1,3 +1,8 @@
+---
+name: tts
+description: 将文本转换为语音，支持 Kokoro 与 Noiz，覆盖简单模式与时间轴精确模式。
+---
+
 # tts
 
 简体中文 | [English](./SKILL.md)

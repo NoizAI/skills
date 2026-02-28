@@ -1,3 +1,8 @@
+---
+name: characteristic-voice
+description: 通过小声音、情绪参数和场景预设，让语音更有陪伴感与人格化表达。
+---
+
 # characteristic-voice
 
 简体中文 | [English](./SKILL.md)

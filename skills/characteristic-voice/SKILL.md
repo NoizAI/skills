@@ -1,3 +1,8 @@
+---
+name: characteristic-voice
+description: Make generated speech feel companion-like with fillers, emotional tuning, and preset speaking styles.
+---
+
 # characteristic-voice
 
 [简体中文](./SKILL.zh-CN.md) | English

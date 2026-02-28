@@ -1,3 +1,8 @@
+---
+name: tts
+description: Convert text into speech with Kokoro or Noiz, including simple and timeline-aligned modes.
+---
+
 # tts
 
 [简体中文](./SKILL.zh-CN.md) | English

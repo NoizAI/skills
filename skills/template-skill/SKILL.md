@@ -1,3 +1,8 @@
+---
+name: template-skill
+description: Reusable template for authoring new Agent Skills with clear triggers, workflow, and I/O contracts.
+---
+
 # <skill-name>
 
 [简体中文](./SKILL.zh-CN.md) | English

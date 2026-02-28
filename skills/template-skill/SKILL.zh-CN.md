@@ -1,3 +1,8 @@
+---
+name: template-skill
+description: 用于编写新 Agent Skill 的可复用模板，包含触发词、流程和输入输出约定。
+---
+
 # <skill-name>
 
 简体中文 | [English](./SKILL.md)

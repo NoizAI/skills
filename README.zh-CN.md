@@ -4,47 +4,29 @@
 
 用于集中管理 Agent Skills 的仓库。
 
-## 目标
+## 用 `npx skills add` 安装
 
-- 统一存放技能定义（`SKILL.md`）
-- 按主题清晰组织技能目录
-- 支持后续发布与复用
+```bash
+# 查看 GitHub 仓库可安装技能
+npx skills add NoizAI/skills --list --full-depth
 
-## 仓库结构
+# 从 GitHub 仓库安装指定技能
+npx skills add NoizAI/skills --full-depth --skill tts -y
 
-```text
-.
-├── skills/
-│   ├── README.md
-│   ├── characteristic-voice/
-│   │   └── SKILL.md
-│   ├── tts/
-│   │   └── SKILL.md
-│   └── template-skill/
-│       └── SKILL.md
-├── CONTRIBUTING.md
-├── README.md
-└── README.zh-CN.md
+# 从 GitHub 仓库安装
+npx skills add <owner>/<repo>
+
+# 本地开发调试（在仓库目录执行）
+npx skills add . --list --full-depth
 ```
 
-## 快速开始
+## 已有技能
 
-1. 在 `skills/` 下创建技能目录（例如 `my-skill/`）
-2. 添加 `SKILL.md`
-3. 参考 `skills/template-skill/SKILL.md` 填写触发词、能力和执行流程
+| 名称 | 说明 | 文档 | 可运行命令 |
+|------|------|------|------------|
+| tts | 将文本转换为语音，支持 Kokoro 与 Noiz，覆盖简单模式与时间轴精确渲染。 | [SKILL.md](./skills/tts/SKILL.zh-CN.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| characteristic-voice | 通过小声音、情绪参数和场景预设，让语音更有陪伴感与人格化表达。 | [SKILL.md](./skills/characteristic-voice/SKILL.zh-CN.md) | `npx skills add NoizAI/skills --full-depth --skill characteristic-voice -y` |
 
-## 技能规范（简版）
+## 贡献说明
 
-- 一个技能对应一个目录
-- 每个技能目录必须包含 `SKILL.md`
-- `SKILL.md` 需要清楚说明：
-  - 触发场景（triggers）
-  - 能力边界（can / cannot）
-  - 标准执行步骤（step-by-step）
-  - 输入输出约定
-
-## 后续建议
-
-- 增加结构与必填字段校验脚本
-- 增加示例输入输出与测试数据
-- 增加发布与安装说明（项目级/全局级）
+技能编写规范、目录约定与 PR 流程，请查看 `CONTRIBUTING.md`。

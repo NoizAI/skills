@@ -1,0 +1,21 @@
+{
+  "default": {
+    "voice": "zf_xiaoni",
+    "lang": "cmn"
+  },
+  "segments": {
+    "1": {
+      "voice": "zm_yunxi"
+    },
+    "2-3": {
+      "voice": "af_sarah",
+      "lang": "en-us",
+      "speed": 1.1
+    },
+    "5": {
+      "voice": "am_adam",
+      "lang": "en-us",
+      "speed": 0.9
+    }
+  }
+}

@@ -9,21 +9,13 @@ Usage:
   tts.sh speak  [options]   — text to audio (simple mode)
   tts.sh render [options]   — SRT to timeline-accurate audio
   tts.sh to-srt [options]   — text file to SRT with auto timings
-  tts.sh voices [options]   — list Noiz voices (built-in or custom)
-  tts.sh setup  [backend]   — install dependencies for a backend
 
 Examples:
   tts.sh speak -t "Hello" -v af_sarah -o hello.wav
   tts.sh speak -f article.txt -v zf_xiaoni --lang cmn -o out.mp3
   tts.sh speak -t "Hi" --backend noiz --voice-id abc -o hi.wav
   tts.sh render --srt input.srt --voice-map vm.json -o output.wav
-  tts.sh render --srt input.srt --voice-map vm.json --backend noiz -o output.wav
   tts.sh to-srt -i article.txt -o article.srt
-  tts.sh to-srt -i article.txt -o article.srt --cps 15 --gap 500
-  tts.sh voices --type built-in
-  tts.sh voices --type custom --keyword "narrator" --limit 5
-  tts.sh setup kokoro
-  tts.sh setup noiz
 EOF
   exit "${1:-0}"
 }
@@ -45,29 +37,45 @@ detect_backend() {
   fi
 }
 
-# ── setup ─────────────────────────────────────────────────────────────
+# ── Noiz helpers ─────────────────────────────────────────────────────
 
-cmd_setup() {
-  local backend="${1:-}"
-  case "$backend" in
-    kokoro)
-      echo "Installing kokoro-tts..."
-      uv tool install kokoro-tts
-      echo "Downloading model files..."
-      wget -nc https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin || true
-      wget -nc https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx || true
-      echo "Done. Kokoro ready."
-      ;;
-    noiz)
-      echo "Installing requests..."
-      uv pip install requests
-      echo "Done. Set NOIZ_API_KEY env var to use Noiz backend."
-      ;;
-    *)
-      echo "Usage: tts.sh setup kokoro|noiz"
-      exit 1
-      ;;
-  esac
+ensure_noiz_ready() {
+  if ! python3 -c "import requests" &>/dev/null; then
+    echo "[noiz] Installing requests..." >&2
+    uv pip install requests >&2
+  fi
+}
+
+fetch_voices_list() {
+  local api_key="$1" limit="${2:-5}" voice_type="${3:-built-in}" keyword="${4:-whisper}"
+  local resp
+  resp="$(curl -sS -H "Authorization: ${api_key}" \
+    "https://noiz.ai/v1/voices?voice_type=${voice_type}&keyword=${keyword}&skip=0&limit=${limit}" 2>/dev/null)" || true
+  if [[ -z "$resp" ]]; then
+    echo "  (could not reach Noiz API)" >&2
+    return 1
+  fi
+  echo "$resp" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin).get('data', {})
+    voices = data.get('voices', [])
+    if not voices:
+        print('  (no voices found)', file=sys.stderr)
+        sys.exit(1)
+    for v in voices:
+        vid = v.get('voice_id', '?')
+        name = v.get('display_name', '?')
+        labels = v.get('labels', '')
+        print(f'  {vid}  {name}  {labels}')
+    total = data.get('total_count', 0)
+    shown = len(voices)
+    if total > shown:
+        print(f'  ... and {total - shown} more')
+except Exception:
+    print('  (could not parse response)', file=sys.stderr)
+    sys.exit(1)
+"
 }
 
 # ── speak (simple mode) ──────────────────────────────────────────────
@@ -109,7 +117,7 @@ cmd_speak() {
   backend="$(detect_backend "$backend_flag")"
 
   if [[ -z "$backend" ]]; then
-    echo "Error: no backend available. Run 'tts.sh setup kokoro' or 'tts.sh setup noiz'." >&2
+    echo "Error: no backend available. Set NOIZ_API_KEY or install kokoro-tts." >&2
     exit 1
   fi
 
@@ -130,10 +138,21 @@ cmd_speak() {
 
     [[ -n "$text" ]] && rm -f "$input_path"
   else
-    # Noiz backend
+    # Noiz backend — auto-setup if needed
     local api_key="${NOIZ_API_KEY:-}"
     if [[ -z "$api_key" ]]; then
       echo "Error: NOIZ_API_KEY not set." >&2; exit 1
+    fi
+    ensure_noiz_ready
+
+    if [[ -z "$voice_id" && -z "$ref_audio" ]]; then
+      echo "Error: --voice-id is required for Noiz TTS (or use --ref-audio for cloning)." >&2
+      echo "" >&2
+      echo "Available built-in voices:" >&2
+      fetch_voices_list "$api_key" 5 "built-in" >&2 || true
+      echo "" >&2
+      echo "Pick a voice_id from above and re-run with --voice-id <id>" >&2
+      exit 1
     fi
 
     local cmd=(python3 "$SCRIPT_DIR/noiz_tts.py" --api-key "$api_key" --output "$output" --output-format "$format")
@@ -180,7 +199,7 @@ cmd_render() {
   local backend
   backend="$(detect_backend "$backend_flag")"
   if [[ -z "$backend" ]]; then
-    echo "Error: no backend available. Run 'tts.sh setup kokoro' or 'tts.sh setup noiz'." >&2
+    echo "Error: no backend available. Set NOIZ_API_KEY or install kokoro-tts." >&2
     exit 1
   fi
 
@@ -226,42 +245,12 @@ cmd_to_srt() {
   "${cmd[@]}"
 }
 
-# ── voices (list Noiz voices) ─────────────────────────────────────────
-
-cmd_voices() {
-  local voice_type="built-in" keyword="" skip=0 limit=20
-
-  while [[ $# -gt 0 ]]; do
-    case "$1" in
-      --type)     voice_type="$2"; shift 2 ;;
-      --keyword)  keyword="$2"; shift 2 ;;
-      --skip)     skip="$2"; shift 2 ;;
-      --limit)    limit="$2"; shift 2 ;;
-      -h|--help)  echo "Usage: tts.sh voices [--type built-in|custom] [--keyword TEXT] [--skip N] [--limit N]"; exit 0 ;;
-      *) echo "Unknown option: $1"; exit 1 ;;
-    esac
-  done
-
-  local api_key
-  api_key="$(ensure_noiz_api_key false)"
-  if [[ -z "$api_key" ]]; then
-    echo "Error: Noiz API key required. Run 'tts.sh setup noiz' to configure." >&2; exit 1
-  fi
-
-  local url="https://noiz.ai/v1/voices?voice_type=${voice_type}&skip=${skip}&limit=${limit}"
-  [[ -n "$keyword" ]] && url="${url}&keyword=${keyword}"
-
-  curl -sS -H "Authorization: ${api_key}" "$url"
-}
-
 # ── dispatch ──────────────────────────────────────────────────────────
 
 case "${1:-}" in
   speak)   shift; cmd_speak "$@" ;;
   render)  shift; cmd_render "$@" ;;
   to-srt)  shift; cmd_to_srt "$@" ;;
-  voices)  shift; cmd_voices "$@" ;;
-  setup)   shift; cmd_setup "$@" ;;
   -h|--help|"") usage 0 ;;
   *) echo "Unknown command: $1"; usage 1 ;;
 esac

@@ -13,14 +13,6 @@ Convert any text into speech audio. Supports two backends (Kokoro local, Noiz cl
 - voice clone / subtitle dubbing / srt to audio
 - epub to audio / markdown to audio / kokoro
 
-## Quick Start
-
-```bash
-# One-time setup (pick cloud first and fallback to local)
-bash skills/tts/scripts/tts.sh setup noiz      # cloud, full-fledged
-bash skills/tts/scripts/tts.sh setup kokoro    # local, free
-```
-
 ## Simple Mode — text to audio
 
 ```bash
@@ -29,25 +21,12 @@ bash skills/tts/scripts/tts.sh speak -t "Hello world" -v af_sarah -o hello.wav
 bash skills/tts/scripts/tts.sh speak -f article.txt -v zf_xiaoni --lang cmn -o out.mp3 --format mp3
 
 # Noiz (auto-detected when NOIZ_API_KEY is set, or force with --backend noiz)
-bash skills/tts/scripts/tts.sh speak -t "你好" --backend noiz --voice-id voice_abc -o hi.wav
-bash skills/tts/scripts/tts.sh speak -f input.txt --backend noiz --voice-id voice_abc --auto-emotion --emo '{"Joy":0.5}' -o out.wav
+# If --voice-id is omitted, the script prints 5 available built-in voices and exits.
+# Pick one from the output and re-run with --voice-id <id>.
+bash skills/tts/scripts/tts.sh speak -f input.txt --voice-id voice_abc --auto-emotion --emo '{"Joy":0.5}' -o out.wav
 
-# Voice cloning (Noiz only)
-bash skills/tts/scripts/tts.sh speak -t "Hello" --backend noiz --ref-audio ./ref.wav -o clone.wav
-
-# List Noiz voices
-# system voices
-bash skills/tts/scripts/tts.sh voices --type built-in              # search
-bash skills/tts/scripts/tts.sh voices --type built-in --keyword "narrator" --limit 5
-```
-
-The script auto-detects the backend: if `NOIZ_API_KEY` is set → Noiz; else if `kokoro-tts` is installed → Kokoro. Override with `--backend`.
-
-Kokoro also natively handles EPUB/PDF:
-
-```bash
-kokoro-tts book.epub --split-output ./chapters/ --format mp3 --voice af_bella
-kokoro-tts document.pdf output.wav --voice am_michael
+# Voice cloning (Noiz only — no voice-id needed, uses ref audio)
+bash skills/tts/scripts/tts.sh speak -t "Hello" --ref-audio ./ref.wav -o clone.wav
 ```
 
 ## Timeline Mode — SRT to time-aligned audio
@@ -115,15 +94,10 @@ bash skills/tts/scripts/tts.sh render --srt input.srt --voice-map vm.json --back
 
 > When the user needs emotion control + voice cloning + precise duration together, Noiz is the only backend that supports all three.
 
-## Limitations
-
-- **Kokoro**: no cloning, no emotion, no server-side duration forcing; Python 3.9–3.12; ~500MB models
-- **Noiz**: max 5000 chars/request; cloud latency; needs API key + credits
-- Timeline mode: overly long text in a short time slot → rushed speech (both backends)
-
 ## Requirements
 
 - `ffmpeg` in PATH (timeline mode)
-- Run `tts.sh setup kokoro` and/or `tts.sh setup noiz`
+- Kokoro: `uv tool install kokoro-tts` once
+- Noiz: set `NOIZ_API_KEY` — deps are auto-installed on first use
 
 For backend details and full argument reference, see [reference.md](reference.md).

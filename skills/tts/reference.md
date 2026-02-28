@@ -8,7 +8,7 @@ Detailed backend comparison, script arguments, voice lists, and API reference.
 |---|---|---|
 | **Type** | Local CLI | Cloud API |
 | **API key** | Not needed | Required (`NOIZ_API_KEY`) |
-| **Install** | `tts.sh setup kokoro` | `tts.sh setup noiz` |
+| **Install** | `uv tool install kokoro-tts` | Auto (on first `speak`) |
 | **Voice cloning** | No | Yes (reference audio) |
 | **Emotion control** | No | Yes (`emo` + `/emotion-enhance`) |
 | **Duration forcing** | No (ffmpeg atempo) | Yes (server-side) |
@@ -27,7 +27,7 @@ Detailed backend comparison, script arguments, voice lists, and API reference.
 | `--text` | `-t` | one of two | Text string |
 | `--text-file` | `-f` | one of two | Text file path |
 | `--voice` | `-v` | kokoro | Kokoro voice name |
-| `--voice-id` | | noiz | Noiz voice ID |
+| `--voice-id` | | noiz | Noiz voice ID (omit to see 5 available voices) |
 | `--output` | `-o` | yes | Output audio path |
 | `--format` | | no (wav) | `wav` or `mp3` |
 | `--lang` | | no | Language code (kokoro: `cmn`, `en-us`, etc.; noiz: `zh`, `en`, etc.) |

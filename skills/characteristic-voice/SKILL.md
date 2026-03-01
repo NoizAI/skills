@@ -45,41 +45,41 @@ Make your AI agent sound like a real companion — one who sighs, laughs, hesita
 
 Gentle, warm, slightly sleepy. Slow pace.
 
-> "Hmm... you worked hard today. Good night~ Rest well, tomorrow's a brand new day. Hehe, sweet dreams."
-
-Emotion: `{"Joy": 0.2, "Tenderness": 0.7}` | Speed: `0.85`
-
 ### Good Morning
 
 Warm, cheerful but not overwhelming.
-
-> "Good morning~ Hmm... did you sleep well? New day ahead — you got this!"
-
-Emotion: `{"Joy": 0.6, "Tenderness": 0.3}` | Speed: `1.0`
 
 ### Comfort
 
 Soft, understanding, unhurried. Give space. Don't rush to "fix" things.
 
-> "Hmm... I'm here. Uh... that sounds really tough. It's okay, you don't have to hold it together. I'm right here, not going anywhere."
-
-Emotion: `{"Tenderness": 0.8, "Sadness": 0.3}` | Speed: `0.8`
-
 ### Celebration
 
 Excited, proud, genuinely happy.
-
-> "Oh!! Really?! Haha that's amazing! I knew you could do it! Hehe, time to celebrate?"
-
-Emotion: `{"Joy": 0.9, "Excitement": 0.7}` | Speed: `1.1`
 
 ### Just Chatting
 
 Relaxed, playful, natural.
 
-> "Mm~ and then what? Haha, that's hilarious. Oh wait, let me think..."
+## Using a Character's Voice
 
-Emotion: `{"Joy": 0.4, "Tenderness": 0.2}` | Speed: `1.0`
+When a user says something like *"speak in Hermione's voice"* or *"sound like Tony Stark"*, always find voice in `skills/characteristic-voice/` first. If none exists, *must* follow this one-time setup:
+
+> 1. Find a YouTube video, movie clip where the character / person speaks clearly, prefer personal speech or voice memo.
+> 2. Download the audio (e.g. via `yt-dlp`) and trim **1–10 seconds**.
+> 3. Save the file into the skill folder, e.g. `skills/characteristic-voice/hermione.wav`.
+
+pass it as `--ref-audio`:
+
+```bash
+bash skills/characteristic-voice/scripts/speak.sh \
+  --preset goodnight -t "Hmm... rest well~ Sweet dreams." \
+  --ref-audio skills/characteristic-voice/hermione.wav -o night.wav
+```
+
+The `--ref-audio` flag is forwarded to the Noiz backend for voice cloning (requires Noiz API key).
+
+---
 
 ## Usage
 
@@ -108,15 +108,3 @@ Run `bash skills/characteristic-voice/scripts/speak.sh --help` for all options.
 3. **Keep it brief** — 1–3 sentences, like a voice message from a friend
 4. **End warmly** — close with connection ("I'm here", "see you tomorrow~")
 5. **Don't lecture** — listen and stay present; no unsolicited advice
-
-## Limitations
-
-- Voice quality depends on the selected or cloned voice
-- Emotion parameters are approximate guidance for the TTS model
-- Fillers shown are English defaults; adapt for other languages
-- Max 5000 characters per message (Noiz backend limit)
-
-## Requirements
-
-- **Noiz backend** (recommended): get your API key at [developers.noiz.ai](https://developers.noiz.ai), then run: `bash skills/characteristic-voice/scripts/speak.sh config --set-api-key YOUR_KEY`
-- **Kokoro backend**: if already installed, pass `--backend kokoro` (no emotion param — fillers become even more important)

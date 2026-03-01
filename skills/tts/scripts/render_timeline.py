@@ -270,9 +270,7 @@ def _noiz_tts(
 
 def _ensure_kokoro() -> None:
     if not shutil.which("kokoro-tts"):
-        raise RuntimeError(
-            "kokoro-tts CLI not found. Install with: uv tool install kokoro-tts"
-        )
+        raise RuntimeError("kokoro-tts CLI not found.")
 
 
 def _kokoro_tts(

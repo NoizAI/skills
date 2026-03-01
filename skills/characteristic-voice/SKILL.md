@@ -83,23 +83,23 @@ Emotion: `{"Joy": 0.4, "Tenderness": 0.2}` | Speed: `1.0`
 
 ## Usage
 
-This skill provides `companion_speak.sh`, a wrapper around the `tts` skill with companion-friendly presets.
+This skill provides `speak.sh`, a wrapper around the `tts` skill with companion-friendly presets.
 
 ```bash
 # Use a preset (auto-sets emotion + speed)
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   --preset goodnight -t "Hmm... rest well~ Sweet dreams." -o night.wav
 
 # Custom emotion override
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   -t "Aww... I'm right here." --emo '{"Tenderness":0.9}' --speed 0.75 -o comfort.wav
 
 # With specific backend and voice
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   --preset morning -t "Good morning~" --voice-id voice_abc --backend noiz -o morning.mp3 --format mp3
 ```
 
-Run `bash skills/characteristic-voice/scripts/companion_speak.sh --help` for all options.
+Run `bash skills/characteristic-voice/scripts/speak.sh --help` for all options.
 
 ## Writing Guide for the Agent
 
@@ -118,6 +118,5 @@ Run `bash skills/characteristic-voice/scripts/companion_speak.sh --help` for all
 
 ## Requirements
 
-- `tts` skill must be available (provides the TTS engine)
-- **Noiz backend**: `NOIZ_API_KEY` env var + voice ID or reference audio
-- **Kokoro backend**: `kokoro-tts` CLI installed (no emotion param — fillers become even more important)
+- **Noiz backend** (recommended): get your API key at [developers.noiz.ai](https://developers.noiz.ai), then run: `bash skills/characteristic-voice/scripts/speak.sh config --set-api-key YOUR_KEY`
+- **Kokoro backend**: if already installed, pass `--backend kokoro` (no emotion param — fillers become even more important)

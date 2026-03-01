@@ -86,23 +86,23 @@ description: 通过小声音、情绪参数和场景预设，让语音更有陪�
 
 ## 使用方法
 
-本技能提供 `companion_speak.sh`，封装了 `tts` 技能并内置陪伴场景预设。
+本技能提供 `speak.sh`，封装了 `tts` 技能并内置陪伴场景预设。
 
 ```bash
 # 用预设（自动设定情绪 + 语速）
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   --preset goodnight -t "嗯... 今天也辛苦了呢。晚安哦～" -o night.wav
 
 # 自定义情绪
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   -t "呜... 我在呢。" --emo '{"Tenderness":0.9}' --speed 0.75 -o comfort.wav
 
 # 指定后端和声音
-bash skills/characteristic-voice/scripts/companion_speak.sh \
+bash skills/characteristic-voice/scripts/speak.sh \
   --preset morning -t "早安呀～" --voice-id voice_abc --backend noiz -o morning.mp3 --format mp3
 ```
 
-运行 `bash skills/characteristic-voice/scripts/companion_speak.sh --help` 查看全部选项。
+运行 `bash skills/characteristic-voice/scripts/speak.sh --help` 查看全部选项。
 
 ## Agent 写作指南
 
@@ -121,6 +121,5 @@ bash skills/characteristic-voice/scripts/companion_speak.sh \
 
 ## 依赖
 
-- 需要 `tts` 技能
-- **Noiz 后端**：设置 `NOIZ_API_KEY` 环境变量 + 声音 ID 或参考音频
-- **Kokoro 后端**：安装 `kokoro-tts`（无情绪参数，小声音更重要）
+- **Noiz 后端**（推荐）：从 [developers.noiz.ai](https://developers.noiz.ai) 获取 API key，然后运行：`bash skills/characteristic-voice/scripts/speak.sh config --set-api-key YOUR_KEY`
+- **Kokoro 后端**：如已安装，传 `--backend kokoro`（无情绪参数，小声音更重要）

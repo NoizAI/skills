@@ -18,9 +18,8 @@ description: 将文本转换为语音，支持 Kokoro 与 Noiz，覆盖简单模
 ## Quick Start
 
 ```bash
-# 一次性安装（选一个或都装）
-bash skills/tts/scripts/tts.sh setup kokoro    # 本地，免费
-bash skills/tts/scripts/tts.sh setup noiz      # 云端，需 NOIZ_API_KEY
+# 配置 Noiz API key（从 https://developers.noiz.ai 获取）
+bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY
 ```
 
 ## 简单模式 — 文本转音频
@@ -38,7 +37,7 @@ bash skills/tts/scripts/tts.sh speak -f input.txt --backend noiz --voice-id voic
 bash skills/tts/scripts/tts.sh speak -t "你好" --backend noiz --ref-audio ./ref.wav -o clone.wav
 ```
 
-脚本自动选后端：有 `NOIZ_API_KEY` → Noiz；有 `kokoro-tts` → Kokoro。可用 `--backend` 覆盖。
+脚本默认使用 Noiz 后端（需配置 API key）。如已安装 Kokoro，可用 `--backend kokoro` 显式指定。配置 key：`bash skills/tts/scripts/tts.sh config`。
 
 Kokoro 原生支持 EPUB/PDF：
 
@@ -121,6 +120,7 @@ bash skills/tts/scripts/tts.sh render --srt input.srt --voice-map vm.json --back
 ## Requirements
 
 - `ffmpeg`（时间轴模式需要）
-- 运行 `tts.sh setup kokoro` 和/或 `tts.sh setup noiz`
+- Noiz：从 [developers.noiz.ai](https://developers.noiz.ai) 获取 API key，然后运行 `bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY`
+- Kokoro：如已安装，传 `--backend kokoro` 使用本地后端
 
 后端细节和完整参数参见 [reference.md](reference.md)。

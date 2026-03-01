@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NOIZ_KEY_FILE="$HOME/.noiz_api_key"
 
 usage() {
   cat <<'EOF'
@@ -9,6 +10,7 @@ Usage:
   tts.sh speak  [options]   — text to audio (simple mode)
   tts.sh render [options]   — SRT to timeline-accurate audio
   tts.sh to-srt [options]   — text file to SRT with auto timings
+  tts.sh config [options]   — check / set NOIZ_API_KEY
 
 Examples:
   tts.sh speak -t "Hello" -v af_sarah -o hello.wav
@@ -16,8 +18,28 @@ Examples:
   tts.sh speak -t "Hi" --backend noiz --voice-id abc -o hi.wav
   tts.sh render --srt input.srt --voice-map vm.json -o output.wav
   tts.sh to-srt -i article.txt -o article.srt
+  tts.sh config --set-api-key YOUR_KEY
 EOF
   exit "${1:-0}"
+}
+
+# ── API key persistence ──────────────────────────────────────────────
+
+load_api_key() {
+  if [[ -n "${NOIZ_API_KEY:-}" ]]; then
+    return 0
+  fi
+  if [[ -f "$NOIZ_KEY_FILE" ]]; then
+    NOIZ_API_KEY="$(tr -d '[:space:]' < "$NOIZ_KEY_FILE")"
+    export NOIZ_API_KEY
+    [[ -n "$NOIZ_API_KEY" ]] && return 0
+  fi
+  return 1
+}
+
+save_api_key() {
+  printf '%s' "$1" > "$NOIZ_KEY_FILE"
+  chmod 600 "$NOIZ_KEY_FILE"
 }
 
 # ── Auto-detect backend ──────────────────────────────────────────────
@@ -28,9 +50,9 @@ detect_backend() {
     echo "$explicit"
     return
   fi
-  if [[ -n "${NOIZ_API_KEY:-}" ]]; then
+  if load_api_key; then
     echo "noiz"
-  elif command -v kokoro-tts &>/dev/null; then
+  elif command -v kokoro-tts &>/dev/null && kokoro-tts --help-voices &>/dev/null; then
     echo "kokoro"
   else
     echo ""
@@ -117,7 +139,14 @@ cmd_speak() {
   backend="$(detect_backend "$backend_flag")"
 
   if [[ -z "$backend" ]]; then
-    echo "Error: no backend available. Set NOIZ_API_KEY or install kokoro-tts." >&2
+    echo "Error: no TTS backend available." >&2
+    echo "" >&2
+    echo "  Option A — Noiz (recommended):" >&2
+    echo "    1. Get your API key from https://developers.noiz.ai" >&2
+    echo "    2. Run: bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY" >&2
+    echo "" >&2
+    echo "  Option B — Kokoro (offline, local):" >&2
+    echo "    uv tool install kokoro-tts" >&2
     exit 1
   fi
 
@@ -138,21 +167,28 @@ cmd_speak() {
 
     [[ -n "$text" ]] && rm -f "$input_path"
   else
-    # Noiz backend — auto-setup if needed
+    load_api_key || true
     local api_key="${NOIZ_API_KEY:-}"
     if [[ -z "$api_key" ]]; then
-      echo "Error: NOIZ_API_KEY not set." >&2; exit 1
+      echo "Error: NOIZ_API_KEY not configured." >&2
+      echo "  Get your key at https://developers.noiz.ai" >&2
+      echo "  Then run: bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY" >&2
+      exit 1
     fi
     ensure_noiz_ready
 
     if [[ -z "$voice_id" && -z "$ref_audio" ]]; then
-      echo "Error: --voice-id is required for Noiz TTS (or use --ref-audio for cloning)." >&2
-      echo "" >&2
-      echo "Available built-in voices:" >&2
-      fetch_voices_list "$api_key" 5 "built-in" >&2 || true
-      echo "" >&2
-      echo "Pick a voice_id from above and re-run with --voice-id <id>" >&2
-      exit 1
+      echo "[noiz] --voice-id not provided, selecting the first built-in voice automatically..." >&2
+      # fetch_voices_list returns "id  name  labels"; auto-select must pass only raw id.
+      voice_id="$(fetch_voices_list "$api_key" 1 "built-in" "whisper" | awk 'NF { print $1; exit }' || true)"
+      if [[ -z "$voice_id" ]]; then
+        echo "Error: failed to auto-select a built-in voice from Noiz. Please pass --voice-id or --ref-audio." >&2
+        echo "" >&2
+        echo "Available built-in voices:" >&2
+        fetch_voices_list "$api_key" 5 "built-in" "whisper" >&2 || true
+        exit 1
+      fi
+      echo "[noiz] Auto-selected voice_id: $voice_id" >&2
     fi
 
     local cmd=(python3 "$SCRIPT_DIR/noiz_tts.py" --api-key "$api_key" --output "$output" --output-format "$format")
@@ -199,7 +235,14 @@ cmd_render() {
   local backend
   backend="$(detect_backend "$backend_flag")"
   if [[ -z "$backend" ]]; then
-    echo "Error: no backend available. Set NOIZ_API_KEY or install kokoro-tts." >&2
+    echo "Error: no TTS backend available." >&2
+    echo "" >&2
+    echo "  Option A — Noiz (recommended):" >&2
+    echo "    1. Get your API key from https://developers.noiz.ai" >&2
+    echo "    2. Run: bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY" >&2
+    echo "" >&2
+    echo "  Option B — Kokoro (offline, local):" >&2
+    echo "    uv tool install kokoro-tts" >&2
     exit 1
   fi
 
@@ -207,9 +250,13 @@ cmd_render() {
     --srt "$srt" --voice-map "$voice_map" --output "$output" --backend "$backend")
 
   if [[ "$backend" == "noiz" ]]; then
+    load_api_key || true
     local api_key="${NOIZ_API_KEY:-}"
     if [[ -z "$api_key" ]]; then
-      echo "Error: NOIZ_API_KEY not set." >&2; exit 1
+      echo "Error: NOIZ_API_KEY not configured." >&2
+      echo "  Get your key at https://developers.noiz.ai" >&2
+      echo "  Then run: bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY" >&2
+      exit 1
     fi
     cmd+=(--api-key "$api_key")
   fi
@@ -245,12 +292,50 @@ cmd_to_srt() {
   "${cmd[@]}"
 }
 
+# ── config ─────────────────────────────────────────────────────────────
+
+cmd_config() {
+  local set_key=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --set-api-key) set_key="$2"; shift 2 ;;
+      -h|--help) echo "Usage: tts.sh config [--set-api-key KEY]"; exit 0 ;;
+      *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+  done
+
+  if [[ -n "$set_key" ]]; then
+    save_api_key "$set_key"
+    echo "API key saved to $NOIZ_KEY_FILE"
+    return 0
+  fi
+
+  if load_api_key; then
+    local masked="${NOIZ_API_KEY:0:4}****${NOIZ_API_KEY: -4}"
+    echo "NOIZ_API_KEY is configured: $masked"
+  else
+    cat <<GUIDE
+NOIZ_API_KEY is not configured.
+
+Option A — Noiz (recommended):
+  1. Get your API key from https://developers.noiz.ai
+  2. Run:
+     bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY
+  The key will be saved to $NOIZ_KEY_FILE and loaded automatically.
+
+Option B — Kokoro (offline, local):
+  uv tool install kokoro-tts
+GUIDE
+  fi
+}
+
 # ── dispatch ──────────────────────────────────────────────────────────
 
 case "${1:-}" in
   speak)   shift; cmd_speak "$@" ;;
   render)  shift; cmd_render "$@" ;;
   to-srt)  shift; cmd_to_srt "$@" ;;
+  config)  shift; cmd_config "$@" ;;
   -h|--help|"") usage 0 ;;
   *) echo "Unknown command: $1"; usage 1 ;;
 esac

@@ -97,7 +97,7 @@ bash skills/tts/scripts/tts.sh render --srt input.srt --voice-map vm.json --back
 ## Requirements
 
 - `ffmpeg` in PATH (timeline mode)
-- Kokoro: `uv tool install kokoro-tts` once
-- Noiz: set `NOIZ_API_KEY` — deps are auto-installed on first use
+- Noiz: get your API key at [developers.noiz.ai](https://developers.noiz.ai), then run `bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY`
+- Kokoro: if already installed, pass `--backend kokoro` to use the local backend
 
 For backend details and full argument reference, see [reference.md](reference.md).

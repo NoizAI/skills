@@ -7,8 +7,8 @@ Detailed backend comparison, script arguments, voice lists, and API reference.
 | | Kokoro | Noiz |
 |---|---|---|
 | **Type** | Local CLI | Cloud API |
-| **API key** | Not needed | Required (`NOIZ_API_KEY`) |
-| **Install** | `uv tool install kokoro-tts` | Auto (on first `speak`) |
+| **API key** | Not needed | Required (`tts.sh config --set-api-key`) |
+| **Install** | Already installed on system | Auto (on first `speak`) |
 | **Voice cloning** | No | Yes (reference audio) |
 | **Emotion control** | No | Yes (`emo` + `/emotion-enhance`) |
 | **Duration forcing** | No (ffmpeg atempo) | Yes (server-side) |
@@ -19,6 +19,14 @@ Detailed backend comparison, script arguments, voice lists, and API reference.
 | **Max text/request** | No hard limit | 5000 chars |
 
 ## tts.sh Subcommands
+
+### `tts.sh config`
+
+| Flag | Required | Notes |
+|------|----------|-------|
+| `--set-api-key` | no | Save Noiz API key to `~/.noiz_api_key` |
+
+Without flags, prints current key status. If no key is found, prints setup instructions.
 
 ### `tts.sh speak`
 

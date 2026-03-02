@@ -369,6 +369,7 @@ def main() -> int:
     ap.add_argument("--work-dir", default=".tmp/tts")
     ap.add_argument("--auto-emotion", action="store_true",
                      help="Noiz backend only: call /emotion-enhance before TTS")
+    ap.add_argument("--ref-audio-track", help="Original audio track to dynamically slice as reference audio per segment")
     ap.add_argument("--output-format", choices=["wav", "mp3"], default="wav")
     ap.add_argument("--timeout-sec", type=int, default=120)
     args = ap.parse_args()
@@ -395,6 +396,20 @@ def main() -> int:
 
         for cue in cues:
             cfg = resolve_segment_cfg(cue.index, voice_map)
+            
+            if args.ref_audio_track and not cfg.get("voice_id") and not cfg.get("reference_audio"):
+                ref_slice_path = work / f"seg_{cue.index:04d}_ref.wav"
+                if not ref_slice_path.exists():
+                    _run_ff([
+                        "ffmpeg", "-y",
+                        "-ss", f"{cue.start_ms / 1000.0:.3f}",
+                        "-i", str(args.ref_audio_track),
+                        "-t", f"{cue.duration_ms / 1000.0:.3f}",
+                        "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1",
+                        str(ref_slice_path)
+                    ])
+                cfg["reference_audio"] = str(ref_slice_path)
+            
             text = cue.text
 
             if args.backend == "noiz" and args.auto_emotion:

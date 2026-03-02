@@ -24,7 +24,8 @@ npx skills add . --list --full-depth
 
 | 名称 | 说明 | 文档 | 可运行命令 |
 |------|------|------|------------|
-| tts | 将文本转换为语音，支持 Kokoro 与 Noiz，覆盖简单模式与时间轴精确渲染。 | [SKILL.md](./skills/tts/SKILL.zh-CN.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| tts | 将文本转为语音，支持 Kokoro / Noiz：简单模式、时间轴精确渲染、精确时长控制与参考音频音色克隆。 | [SKILL.md](./skills/tts/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| video-translation | 视频翻译与配音：按字幕时间轴生成 TTS 并替换原音轨，支持按句使用原视频对应时间段的参考音频。 | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
 | characteristic-voice | 通过小声音、情绪参数和场景预设，让语音更有陪伴感与人格化表达。 | [SKILL.md](./skills/characteristic-voice/SKILL.zh-CN.md) | `npx skills add NoizAI/skills --full-depth --skill characteristic-voice -y` |
 
 ## 快速验证

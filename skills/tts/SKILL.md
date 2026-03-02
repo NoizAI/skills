@@ -77,6 +77,12 @@ Noiz voice map (adds `emo`, `reference_audio` support). `reference_audio` can be
 }
 ```
 
+**Dynamic Reference Audio Slicing**:
+If you are translating or dubbing a video and want each sentence to automatically use the audio from the original video at the exact same timestamp as its reference audio, use the `--ref-audio-track` argument instead of setting `reference_audio` in the map:
+```bash
+bash skills/tts/scripts/tts.sh render --srt input.srt --voice-map vm.json --ref-audio-track original_video.mp4 -o output.wav
+```
+
 See `examples/` for full samples.
 
 ### Step 3: Render

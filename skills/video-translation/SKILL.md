@@ -40,19 +40,21 @@ When the user asks to translate a video:
    Save the translated text into a new file `translated.srt`.
 
 3. **Generate Dubbed Audio**:
-   Use the `tts` skill to render the timeline-accurate audio from the translated SRT.
-   Create a `voice_map.json`:
+   Use the `tts` skill to render the timeline-accurate audio from the translated SRT. The Noiz backend automatically aligns the duration of each sentence to the original video's subtitle timestamps.
+   
+   To ensure the cloned voice matches the original speaker's exact tone and emotion for each sentence, pass the original video file to `--ref-audio-track`. The TTS engine will automatically slice the original audio at each subtitle's exact timestamp and use it as the reference for that specific segment.
+   
+   Create a basic `voice_map.json`:
    ```json
    {
      "default": {
-       "voice_id": "voice_123",  // Or let the Noiz backend auto-select
        "target_lang": "<target_lang_code>"
      }
    }
    ```
-   Render audio:
+   Render the timeline-accurate audio:
    ```bash
-   bash skills/tts/scripts/tts.sh render --srt translated.srt --voice-map voice_map.json --backend noiz --auto-emotion -o dubbed.wav
+   bash skills/tts/scripts/tts.sh render --srt translated.srt --voice-map voice_map.json --backend noiz --auto-emotion --ref-audio-track original_video.mp4 -o dubbed.wav
    ```
 
 4. **Replace Audio in Video**:
@@ -71,7 +73,7 @@ When the user asks to translate a video:
   - `target_language`: The language to translate the audio to.
 - **Optional inputs**:
   - `source_language`: The language of the original video (if not auto-detected or specified).
-  - `voice_id`: Specific TTS voice ID to use for dubbing.
+  - `reference_audio`: Specific audio file/URL to use for voice cloning instead of the dynamic original video track.
 
 ## Outputs
 
@@ -80,9 +82,12 @@ When the user asks to translate a video:
 
 ## Requirements
 
-- `youtube-downloader` skill (from crazynomad/skills) must be installed and accessible.
-- `tts` skill from this project.
-- `NOIZ_API_KEY` configured (`bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY`).
+- **Dependencies (other skills)**  
+  - **youtube-downloader** ([crazynomad/skills](https://github.com/crazynomad/skills)) — [SKILL.md](https://github.com/crazynomad/skills/blob/main/skills/youtube-downloader/SKILL.md)  
+    Install: clone or copy the `skills/youtube-downloader` directory from [crazynomad/skills](https://github.com/crazynomad/skills) into your `skills/` folder so that `skills/youtube-downloader/scripts/download_video.py` is available.
+  - **tts** ([NoizAI/skills](https://github.com/NoizAI/skills)) — [SKILL.md](https://github.com/NoizAI/skills/blob/main/skills/tts/SKILL.md)  
+    If not already in this repo: clone or copy the `skills/tts` directory from [NoizAI/skills](https://github.com/NoizAI/skills) into your `skills/` folder. Ensure `skills/tts/scripts/tts.sh` and related scripts are present.
+- `NOIZ_API_KEY` configured: `bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY`
 - `ffmpeg` installed.
 
 ## Limitations

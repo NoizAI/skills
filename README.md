@@ -25,7 +25,8 @@ npx skills add . --list --full-depth
 
 | Name | Description | Documentation | Run command |
 |------|-------------|---------------|-------------|
-| tts | Convert text into speech with Kokoro or Noiz, supporting simple mode and timeline-aligned rendering workflows. | [SKILL.md](./skills/tts/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| tts | Convert text into speech with Kokoro or Noiz: simple mode, timeline-aligned rendering, precise duration control, and reference-audio voice cloning. | [SKILL.md](./skills/tts/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
+| video-translation | Translate and dub videos to another language: replace original audio with TTS aligned to subtitle timestamps, using per-segment reference audio from the source video. | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
 | characteristic-voice | Make generated speech feel companion-like with fillers, emotional tuning, and preset speaking styles. | [SKILL.md](./skills/characteristic-voice/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill characteristic-voice -y` |
 
 ## Quick Verify

@@ -34,6 +34,15 @@ bash skills/characteristic-voice/scripts/speak.sh \
   --preset comfort -t "嗯... 我在呢" -o comfort.wav
 ```
 
+## 英文音频示例
+
+可直接点击试听以下示例：
+
+- 新闻快讯风格：[demo-breaking-news.wav](./examples/audio/demo-breaking-news.wav)
+- 冥想治愈风格：[demo-mindful-calm.wav](./examples/audio/demo-mindful-calm.wav)
+- 播客开场风格：[demo-podcast-intro.wav](./examples/audio/demo-podcast-intro.wav)
+- 创业激励风格：[demo-startup-hype.wav](./examples/audio/demo-startup-hype.wav)
+
 ## Noiz API Key（推荐）
 
 为获得最佳体验（更快、支持情绪控制、音色克隆），从 [developers.noiz.ai](https://developers.noiz.ai) 获取 API key：

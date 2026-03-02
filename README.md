@@ -35,6 +35,15 @@ bash skills/characteristic-voice/scripts/speak.sh \
   --preset comfort -t "Hmm... I'm right here." -o comfort.wav
 ```
 
+## English Audio Demos
+
+Sample outputs for quick listening:
+
+- Breaking news style: [demo-breaking-news.wav](./examples/audio/demo-breaking-news.wav)
+- Mindful calm style: [demo-mindful-calm.wav](./examples/audio/demo-mindful-calm.wav)
+- Podcast intro style: [demo-podcast-intro.wav](./examples/audio/demo-podcast-intro.wav)
+- Startup hype style: [demo-startup-hype.wav](./examples/audio/demo-startup-hype.wav)
+
 ## Noiz API Key (recommended)
 
 For the best experience (faster, emotion control, voice cloning), get your API key from [developers.noiz.ai](https://developers.noiz.ai):

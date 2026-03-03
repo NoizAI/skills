@@ -18,21 +18,13 @@ Convert any text into speech audio. Supports two backends (Kokoro local, Noiz cl
 ## Simple Mode — text to audio
 
 ```bash
-# Kokoro (auto-detected when installed)
-bash skills/tts/scripts/tts.sh speak -t "Hello world" -v af_sarah -o hello.wav
+# speak (auto-detected when installed)
+bash skills/tts/scripts/tts.sh speak -t "Hello world" -v af_sarah # add -o path if you need to store result for later usage
 bash skills/tts/scripts/tts.sh speak -f article.txt -v zf_xiaoni --lang cmn -o out.mp3 --format mp3
 
-# Noiz (auto-detected when NOIZ_API_KEY is set, or force with --backend noiz)
-# If --voice-id is omitted, the script prints 5 available built-in voices and exits.
-# Pick one from the output and re-run with --voice-id <id>.
-bash skills/tts/scripts/tts.sh speak -f input.txt --voice-id voice_abc --auto-emotion --emo '{"Joy":0.5}' -o out.wav
-
-# Noiz: optional --duration (float, seconds, range (0, 36]) for target audio length
-bash skills/tts/scripts/tts.sh speak -t "Short line" --voice-id voice_abc --duration 3.5 -o out.wav
-
-# Voice cloning (Noiz only — no voice-id needed, uses ref audio)
-# Use your own reference audio: local file path or URL (only when using Noiz).
-bash skills/tts/scripts/tts.sh speak -t "Hello" --ref-audio ./ref.wav -o clone.wav
+# Voice cloning
+# Use your own reference audio: local file path or URL.
+bash skills/tts/scripts/tts.sh speak -t "Hello" --ref-audio ./ref.wav
 bash skills/tts/scripts/tts.sh speak -t "Hello" --ref-audio https://example.com/my_voice.wav -o clone.wav
 ```
 

@@ -33,10 +33,8 @@ npx skills add . --list --full-depth
 |------|-------------|---------------|-------------|
 | tts | Convert text into speech with Kokoro or Noiz: simple mode, timeline-aligned rendering, precise duration control, and reference-audio voice cloning. | [SKILL.md](./skills/tts/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill tts -y` |
 | chat-with-anyone | Chat with any real person or fictional character in their own voice by automatically finding their speech online, extracting a clean reference sample, and generating audio replies. | [SKILL.md](./skills/chat-with-anyone/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill chat-with-anyone -y` |
-| video-translation | Translate and dub videos to another language: replace original audio with TTS aligned to subtitle timestamps, using per-segment reference audio from the source video. | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
 | characteristic-voice | Make generated speech feel companion-like with fillers, emotional tuning, and preset speaking styles. | [SKILL.md](./skills/characteristic-voice/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill characteristic-voice -y` |
 | video-translation | Translate and dub videos from one language to another, replacing the original audio with TTS while keeping the video intact. | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
-| template-skill | Reusable template for authoring new Agent Skills with clear triggers, workflow, and I/O contracts. | [SKILL.md](./skills/template-skill/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill template-skill -y` |
 
 ## Quick Verify
 

@@ -92,3 +92,6 @@ The key is persisted to `~/.noiz_api_key` and loaded automatically. Alternativel
 ## Contributing
 
 For skill authoring rules, directory conventions, and PR guidance, see `CONTRIBUTING.md`.
+
+## Feedback & Discussion
+[Join discord](https://discord.gg/kKqKnmCCPq)

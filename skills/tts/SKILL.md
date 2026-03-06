@@ -126,4 +126,8 @@ bash skills/tts/scripts/tts.sh render --srt input.srt --voice-map vm.json --back
 - Noiz: get your API key at [developers.noiz.ai/api-keys](https://developers.noiz.ai/api-keys), then run `bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY`
 - Kokoro: if already installed, pass `--backend kokoro` to use the local backend
 
+### Noiz API authentication
+
+Use **only** the base64-encoded API key as `Authorization`—no prefix (e.g. no `APIKEY ` or `Bearer `). Any prefix causes 401.
+
 For backend details and full argument reference, see [reference.md](reference.md).

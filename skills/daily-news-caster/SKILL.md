@@ -30,7 +30,7 @@ python3 path/to/fetch_news.py --source all --limit 10 --deep
 ### Step 3: Write the Podcast Script
 Read the fetched news data and rewrite the information into a **Markdown podcast script**. 
 The script should be:
-- **Conversational and engaging:** Write as if a podcast host is speaking to an audience. Use a friendly, natural tone.
+- **Conversational yet concise:** Write as if a podcast host is speaking, but **avoid unnecessary fluff or overly long transitions**. Keep it to the point (言简意赅) while retaining all critical information and facts.
 - **Structured:** Use markdown headings and clear paragraphs.
 - **Clear text for speech:** Avoid complex URLs, raw markdown links, or unpronounceable characters in the spoken text.
 
@@ -57,6 +57,7 @@ bash path/to/tts.sh speak -f podcast_script.md -o podcast_output.mp3
 ```
 
 ### Step 5: Present the Result
-Let the user know that the podcast has been successfully generated. 
-- Provide the path to the `podcast_output.mp3` file so they can listen to it.
-- Briefly summarize the headlines that were included in the podcast script.
+Let the user know that the podcast has been successfully generated. You **MUST** provide both files back to the user:
+- Show or link to the `podcast_script.md` file so they can read the script.
+- Provide the path to the `podcast_output.mp3` file so they can listen to the audio.
+- Briefly summarize the headlines that were included in the podcast.

@@ -27,17 +27,16 @@ Example command:
 python3 path/to/fetch_news.py --source all --limit 10 --deep
 ```
 
-### Step 3: Write the Podcast Script
+### Step 3: Draft the Podcast Script (Internal Step)
 Read the fetched news data and rewrite the information into a **Markdown podcast script**. 
 **Crucially, prioritize a dual-host (two-person) conversational format** (e.g., Host A and Host B) in a dynamic **Q&A style**.
 The script should be:
 - **Dual-Host Conversational yet concise:** Write an engaging back-and-forth between two hosts. **Host A should ask insightful, high-value questions** to guide the conversation, and **Host B should provide informative, concise answers**. It should feel like a smart, fast-paced Q&A dialogue.
 - **Avoid fluff:** Do not include unnecessary fluff or overly long transitions. Keep it to the point (言简意赅) while retaining all critical information and facts.
 - **Clearly Labeled Speakers:** Start each line or paragraph with the speaker's name (e.g., `Host A:` or `Host B:`).
-- **Structured:** Use markdown headings and clear paragraphs.
 - **Clear text for speech:** Avoid complex URLs, raw markdown links, or unpronounceable characters in the spoken text.
 
-Save this script to a local file named `podcast_script.md`.
+Save this script to a local file named `podcast_script.md`. **Do NOT output the full markdown script to the user yet.**
 
 **Example `podcast_script.md` Content:**
 ```markdown
@@ -56,38 +55,34 @@ Save this script to a local file named `podcast_script.md`.
 **Host A:** Great insights. That's all for today's quick update. Thanks for tuning in!
 ```
 
-### Step 4: Generate the Podcast Audio
-Use the `tts` skill to convert the script into an audio file. Since it's a dual-host format, you must use the **Timeline Mode** of the `tts` skill.
+### Step 4: Generate the Podcast Audio Line-by-Line
+To avoid sending the entire script to the API at once, you must generate the audio **sentence by sentence (一人一句地生成)** and then concatenate them.
 
 Find the `tts.sh` script (usually located in `skills/tts/scripts/tts.sh` or `.cursor/skills/tts/scripts/tts.sh`).
 
-**1. Generate SRT**: Convert the script to SRT format.
+**1. Generate Audio for Each Line**:
+For each dialogue line in the script, run the `speak` command. Use the appropriate voice or reference audio for the respective host. **If the user provided reference audio files or URLs for the two roles**, use them via the `--ref-audio` flag (requires `noiz` backend).
 ```bash
-bash path/to/tts.sh to-srt -i podcast_script.md -o podcast.srt
+# Example for Line 1 (Host A)
+bash path/to/tts.sh speak -t "Welcome to today's news roundup..." --backend noiz --ref-audio path/to/host_A.wav -o line_01.wav
+
+# Example for Line 2 (Host B)
+bash path/to/tts.sh speak -t "The main takeaway is that..." --backend noiz --ref-audio path/to/host_B.wav -o line_02.wav
 ```
 
-**2. Create a Voice Map (`voice_map.json`)**:
-Map the lines in the SRT to the corresponding host. **If the user provided reference audio files or URLs for the two roles**, you **MUST** use them via the `reference_audio` field (requires `noiz` backend). Otherwise, assign default distinct voices.
-```json
-{
-  "default": { "voice_id": "voice_host_A", "target_lang": "zh" },
-  "segments": {
-    "1": { "reference_audio": "path/or/url_to_user_audio_for_host_A.wav" },
-    "2": { "reference_audio": "path/or/url_to_user_audio_for_host_B.wav" },
-    "3": { "reference_audio": "path/or/url_to_user_audio_for_host_A.wav" }
-  }
-}
+**2. Concatenate the Audio Files**:
+Create a text file (e.g., `list.txt`) listing all the generated audio files in order:
+```text
+file 'line_01.wav'
+file 'line_02.wav'
 ```
-*(Adjust the segment numbers corresponding to the generated SRT lines for Host A and Host B).*
-
-**3. Render Audio**:
+Then use `ffmpeg` to merge them into a single podcast audio file:
 ```bash
-# If using user's reference_audio, use the noiz backend
-bash path/to/tts.sh render --srt podcast.srt --voice-map voice_map.json --backend noiz -o podcast_output.mp3
+ffmpeg -f concat -safe 0 -i list.txt -c copy podcast_output.wav
 ```
 
-### Step 5: Present the Result
-Let the user know that the podcast has been successfully generated. You **MUST** provide both files back to the user:
-- Show or link to the `podcast_script.md` file so they can read the script.
-- Provide the path to the `podcast_output.mp3` file so they can listen to the audio.
+### Step 5: Present the Final Result
+After the full audio has been generated and merged, present the results to the user. You **MUST** provide both pieces of content:
+- Output the fully drafted **Markdown podcast script** into the chat so the user can read it.
+- Provide the path to the final `podcast_output.wav` file so they can listen to the audio.
 - Briefly summarize the headlines that were included in the podcast.

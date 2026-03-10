@@ -1,6 +1,9 @@
 ---
 name: daily-news-caster
 description: Fetches the latest news using news-aggregator-skill, formats it into a podcast script in Markdown format, and uses the tts skill to generate a podcast audio file. Use when the user asks to get the latest news and read it out as a podcast.
+metadata:
+  source: https://github.com/icheer/noiz-ai-skills
+  repository: icheer/noiz-ai-skills
 ---
 
 # Daily News Caster Skill

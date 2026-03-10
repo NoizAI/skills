@@ -1,6 +1,9 @@
 ---
 name: video-translation
 description: Translate and dub videos from one language to another, replacing the original audio with TTS while keeping the video intact.
+metadata:
+  source: https://github.com/icheer/noiz-ai-skills
+  repository: icheer/noiz-ai-skills
 ---
 
 # Video Translation

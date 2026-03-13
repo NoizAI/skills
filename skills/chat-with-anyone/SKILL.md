@@ -27,6 +27,7 @@ Chat with any real person or fictional character in their own voice. Two modes:
 | User names a specific real/fictional person | Name-based (Workflow A) |
 | User uploads/attaches an image and wants to talk to that person | Image-based (Workflow B) |
 | User uploads an image AND names the person | Image-based preferred (the image gives more accurate voice design) |
+| User uploads an image, agent recognizes a public figure | Name-based (Workflow A) — real voice clone is more authentic |
 
 ---
 
@@ -71,16 +72,25 @@ python3 skills/tts/scripts/tts.py -t "Hello there! I am ready to chat with you."
 
 When the user uploads an image and wants to chat with the person depicted, follow these steps:
 
-### B1. Identify the Image
-Confirm the user has provided an image file path. If the image shows multiple people, ask the user which person they want to talk to, then craft a `voice_description` focusing on that person's apparent traits (gender, approximate age, demeanor).
+### B1. Analyze the Image
+First, use your own vision capability to look at the image and try to identify the person:
+
+1. **Try to recognize the person first.** If the person is a recognizable public figure or fictional character (e.g. a celebrity, politician, anime character), state their name. If you can identify them, **switch to Workflow A** — finding their real voice online will produce a far more authentic result than voice-design.
+2. **If the person is unrecognizable** (an ordinary person, or you're not confident in the identification), produce a detailed voice description covering:
+   - **Gender** (male / female)
+   - **Approximate age** (e.g. "around 30 years old")
+   - **Apparent demeanor / personality** (e.g. cheerful, authoritative, gentle, energetic)
+   - **Any contextual cues** (e.g. wearing a suit → likely professional tone; athletic outfit → energetic)
+
+If the image shows multiple people, ask the user which person they want to talk to, then analyze only that person.
 
 ### B2. Design the Voice
-Run the `voice_design.py` script with the image. Optionally include a voice description for better results.
+Pass **both** the image and the agent-generated description to `voice_design.py`. Combining the image with a textual description produces significantly better voice matches than either input alone.
 
 ```bash
 python3 skills/chat-with-anyone/voice_design.py \
   --picture "path/to/person.jpg" \
-  --voice-description "A warm male voice, around 30 years old, calm and friendly tone" \
+  --voice-description "A warm male voice, around 30 years old, calm and friendly tone, speaks with confidence" \
   -o "tmp/voice_design_output"
 ```
 
@@ -130,14 +140,25 @@ For subsequent messages in the conversation, keep using the same `--voice-id` so
 **User**: [uploads photo.jpg] 我想跟这张图片里的人聊天
 
 **Agent**:
-1. (Internal) Analyze the image — it shows a young woman, roughly 25 years old.
-2. (Internal) Design a voice from the image:
-   `python3 skills/chat-with-anyone/voice_design.py --picture "photo.jpg" --voice-description "A young woman around 25, gentle and cheerful voice" -o "tmp/voice_design_output"`
-3. (Internal) Read result: `voice_id = abc123`, features: female, 20-30, Chinese.
-4. (Internal) Present preview audio to user for confirmation.
-5. (Internal) Generate TTS with the designed voice:
+1. (Internal) Use vision to analyze the image — cannot identify as a known person. It shows a young woman, roughly 25 years old, long hair, wearing a casual sweater, smiling warmly at the camera.
+2. (Internal) Person is unrecognizable → stay in Workflow B. Generate voice description: "A young Chinese woman around 25 years old, with a gentle, cheerful and warm voice. Speaks softly with a friendly tone."
+3. (Internal) Design a voice from the image + description:
+   `python3 skills/chat-with-anyone/voice_design.py --picture "photo.jpg" --voice-description "A young Chinese woman around 25 years old, with a gentle, cheerful and warm voice. Speaks softly with a friendly tone." -o "tmp/voice_design_output"`
+4. (Internal) Read result: `voice_id = abc123`, features: female, 20-30, Chinese.
+5. (Internal) Present preview audio to user for confirmation.
+6. (Internal) Generate TTS with the designed voice:
    `python3 skills/tts/scripts/tts.py -t "你好呀！很高兴认识你，想聊点什么呢？" --voice-id "abc123" -o "output.wav"`
-6. **Agent replies**: "Here is the voice designed from the photo! 🎧" (Presents `output.wav` and the text, continues roleplay with same `voice_id`).
+7. **Agent replies**: Tells the user the visual analysis result, presents `output.wav`, and continues roleplay with same `voice_id`.
+
+### Example 3: Image-based → recognized as public figure → fallback to Workflow A
+
+**User**: [uploads elon.jpg] 我想跟这个人聊聊
+
+**Agent**:
+1. (Internal) Use vision to analyze the image — recognized as Elon Musk.
+2. (Internal) Person is a known public figure → **switch to Workflow A** for authentic voice.
+3. (Internal) Follow Workflow A steps: find a speech video, download, extract audio segment, generate TTS with `--ref-audio`.
+4. **Agent replies**: "图片中的人物是 Elon Musk，我找到了他的真实声音来跟你对话！" (Presents audio and continues roleplay).
 
 ## Dependencies
 - **youtube-downloader**: For fetching videos and subtitles (Workflow A only).

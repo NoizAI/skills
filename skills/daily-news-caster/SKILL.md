@@ -1,14 +1,17 @@
 ---
 name: daily-news-caster
 description: Fetches the latest news using news-aggregator-skill, formats it into a podcast script in Markdown format, and uses the tts skill to generate a podcast audio file. Use when the user asks to get the latest news and read it out as a podcast.
+permissions:
+  - network
+  - filesystem
 dependencies:
   skills:
     - news-aggregator-skill
     - tts
   binaries:
     - python3
-    - bash
     - ffmpeg
+metadata: {"requiredEnv": ["NOIZ_API_KEY"]}
 ---
 
 # Daily News Caster Skill
@@ -62,14 +65,14 @@ Save this script to a local file named `podcast_script.md`.
 ### Step 4: Generate the Podcast Audio Line-by-Line
 To avoid sending the entire script to the API at once, you must generate the audio **sentence by sentence (一人一句地生成)** and then concatenate them.
 
-Use the `tts.sh` script from the local `tts` skill (e.g., `skills/tts/scripts/tts.sh`). Read the tts skill's SKILL.md for full usage details.
+Use `tts.py` from the local `tts` skill (`skills/tts/scripts/tts.py`). Read the tts skill's SKILL.md for full usage and backend options.
 
 **1. Generate Audio for Each Line**:
-For each dialogue line in the script, run the `speak` command. Use the appropriate voice or reference audio for the respective host. If the user provided reference audio files for the two roles, use them via the `--ref-audio` flag (requires `noiz` backend).
+For each dialogue line in the script, run the `speak` command. Use the appropriate voice or reference audio for the respective host. If the user provided reference audio files for the two roles, use them via the `--ref-audio` flag (requires noiz backend and `NOIZ_API_KEY`). Without an API key, guest mode voices are available (see tts SKILL.md for the voice list).
 ```bash
-bash skills/tts/scripts/tts.sh speak -t "Welcome to today's news roundup..." --backend noiz --ref-audio host_A.wav -o line_01.wav
+python3 skills/tts/scripts/tts.py -t "Welcome to today's news roundup..." --ref-audio host_A.wav -o line_01.wav
 
-bash skills/tts/scripts/tts.sh speak -t "The main takeaway is that..." --backend noiz --ref-audio host_B.wav -o line_02.wav
+python3 skills/tts/scripts/tts.py -t "The main takeaway is that..." --ref-audio host_B.wav -o line_02.wav
 ```
 
 **2. Concatenate the Audio Files**:

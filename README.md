@@ -86,7 +86,7 @@ https://github.com/user-attachments/assets/0d3b8af9-2288-4a63-9246-2748ed232b0e
 For the best experience (faster, emotion control, voice cloning), get your API key from [developers.noiz.ai/api-keys](https://developers.noiz.ai/api-keys):
 
 ```bash
-bash skills/tts/scripts/tts.sh config --set-api-key YOUR_KEY
+python skills/tts/scripts/tts.py config --set-api-key YOUR_KEY
 ```
 
 The key is persisted to `~/.noiz_api_key` and loaded automatically. Alternatively, pass `--backend kokoro` to use the local Kokoro backend.

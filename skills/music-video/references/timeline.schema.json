@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/NoizAI/skills/music-video/timeline.schema.json",
+  "title": "Music video timeline",
+  "description": "Scene intervals for mv.py assemble. Coverage, source duration, and the original soundtrack are checked by the CLI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fps", "width", "height", "audio", "scenes"],
+  "properties": {
+    "fps": {
+      "const": 24
+    },
+    "width": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 3840,
+      "multipleOf": 2
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 3840,
+      "multipleOf": 2
+    },
+    "audio": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Project-relative path of the initialized source song."
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/scene" }
+    },
+    "overlays": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/overlay" }
+    }
+  },
+  "$defs": {
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start_frame", "end_frame", "source"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        },
+        "start_frame": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_frame": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Exclusive end frame. The next scene starts on this frame."
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project-relative image or video."
+        },
+        "source_start": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Trim point in a video source, in seconds. Ignored for images."
+        },
+        "fit": {
+          "enum": ["cover", "contain"],
+          "default": "cover"
+        },
+        "transition": {
+          "enum": ["cut", "fade"],
+          "default": "cut",
+          "description": "Fade stays inside this scene. It does not overlap the next scene."
+        },
+        "fade_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 48,
+          "default": 6
+        }
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "start_frame", "end_frame"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "start_frame": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_frame": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "x": {
+          "type": "integer",
+          "default": 0
+        },
+        "y": {
+          "type": "integer",
+          "default": 0
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

@@ -39,6 +39,9 @@ npx skills add . --list --full-depth
 | daily-news-caster | Fetch the latest real-time news and automatically generate a dual-host conversational podcast with audio. | [SKILL.md](./skills/daily-news-caster/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill daily-news-caster -y` |
 | sound-fx | Generate any sound effect from a text description — animals, ambience, cartoon sounds, sci-fi, and more. One command, 1–30 seconds, WAV/MP3/FLAC output. | [SKILL.md](./skills/sound-fx/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill sound-fx -y` |
 | text-to-music | Generate a full song with vocals from a music description and lyrics (your own, or written for you), or cover an existing song in a new style with its lyrics auto-recognized. Two variants per request, MP3 output. | [SKILL.md](./skills/text-to-music/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill text-to-music -y` |
+| music-video | Build a 24fps music video from an existing song, either as p5.js animation or by assembling local stills and clips. | [SKILL.md](./skills/music-video/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill music-video -y` |
+
+`music-video` needs `ffmpeg`. Code mode also needs Node.js, Google Chrome, and git. Hybrid mode reads only local images and clips: it does not upload them or call an image or video generation API.
 
 ## Quick Verify
 

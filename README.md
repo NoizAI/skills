@@ -38,6 +38,7 @@ npx skills add . --list --full-depth
 | video-translation | Translate and dub videos from one language to another, replacing the original audio with TTS while keeping the video intact. | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
 | daily-news-caster | Fetch the latest real-time news and automatically generate a dual-host conversational podcast with audio. | [SKILL.md](./skills/daily-news-caster/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill daily-news-caster -y` |
 | sound-fx | Generate any sound effect from a text description — animals, ambience, cartoon sounds, sci-fi, and more. One command, 1–30 seconds, WAV/MP3/FLAC output. | [SKILL.md](./skills/sound-fx/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill sound-fx -y` |
+| text-to-music | Generate a full song with vocals from a music description and lyrics (your own, or written for you), or cover an existing song in a new style with its lyrics auto-recognized. Two variants per request, MP3 output. | [SKILL.md](./skills/text-to-music/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill text-to-music -y` |
 
 ## Quick Verify
 

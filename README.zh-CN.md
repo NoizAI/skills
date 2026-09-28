@@ -38,6 +38,7 @@ npx skills add . --list --full-depth
 | video-translation | 将视频语音翻译成另一种语言，用 TTS 生成配音并替换原始音轨，同时保留视频画面。 | [SKILL.md](./skills/video-translation/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill video-translation -y` |
 | daily-news-caster | 获取最新的实时新闻，并自动生成双人对话式的播客音频。 | [SKILL.md](./skills/daily-news-caster/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill daily-news-caster -y` |
 | sound-fx | 用一句话生成任意音效——动物叫声、氛围背景音、搞笑卡通音、科幻音效……1–30 秒，WAV/MP3/FLAC 输出，一行命令搞定。 | [SKILL.md](./skills/sound-fx/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill sound-fx -y` |
+| text-to-music | 用一段音乐描述 + 歌词（自己写或让服务端代写）生成带人声的完整歌曲；也可以翻唱已有歌曲、换成新风格，原曲歌词可自动识别。每次产出两个版本，MP3 输出。 | [SKILL.md](./skills/text-to-music/SKILL.md) | `npx skills add NoizAI/skills --full-depth --skill text-to-music -y` |
 
 ## 快速验证
 

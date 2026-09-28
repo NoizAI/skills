@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NOIZ_KEY_FILE="$HOME/.noiz_api_key"
+NOIZ_KEY_FILE="$HOME/.config/noiz/api_key"
 NOIZ_BASE_URL="https://noiz.ai/v1"
 
 usage() {
@@ -173,7 +173,7 @@ noiz_auto_select_voice() {
   local api_key="$1"
   local resp
   resp="$(curl -sS -H "Authorization: ${api_key}" \
-    "${NOIZ_BASE_URL}/voices?voice_type=built-in&keyword=whisper&skip=0&limit=1" 2>/dev/null)" || true
+    "${NOIZ_BASE_URL}/voices?voice_type=built-in&keyword=%E4%B8%AD%E6%96%87&skip=0&limit=10" 2>/dev/null)" || true
   if [[ -z "$resp" ]]; then
     return 1
   fi
@@ -181,8 +181,11 @@ noiz_auto_select_voice() {
 import sys, json
 try:
     voices = json.load(sys.stdin).get('data', {}).get('voices', [])
-    if voices:
-        print(voices[0]['voice_id'])
+    for v in voices:
+        if '女性' in (v.get('labels') or ''):
+            print(v['voice_id']); break
+    else:
+        if voices: print(voices[0]['voice_id'])
 except Exception:
     pass
 " 2>/dev/null
